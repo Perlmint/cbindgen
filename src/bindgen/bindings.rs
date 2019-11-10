@@ -62,32 +62,28 @@ impl Bindings {
         any
     }
 
-    pub fn struct_field_names(&self, path: &BindgenPath) -> Option<Rc<Vec<String>>> {
+    pub fn struct_field_names(&self, path: &BindgenPath) -> Rc<Vec<String>> {
         let mut memos = self.struct_fileds_memo.borrow_mut();
         if let Some(memo) = memos.get(path) {
-            Some(memo.clone())
-        } else {
-            let item_container = self.struct_map.get_items(path)?;
-            let mut fields = Vec::<String>::new();
-            for container in item_container {
-                let mut pos: usize = 0;
-                if let ItemContainer::Struct(ref st) = container {
-                    for field in &st.fields {
-                        if let Some(found_pos) = fields.iter().position(|v| *v == field.0) {
-                            pos = found_pos + 1;
-                        } else {
-                            fields.insert(pos, field.0.clone());
-                            pos += 1;
-                        }
-                    }
-                } else {
-                    unreachable!()
-                }
-            }
-
-            memos.insert(path.clone(), Rc::new(fields));
-            memos.get(path).map(|val| val.clone())
+            return memo.clone();
         }
+
+        let mut fields = Vec::<String>::new();
+        self.struct_map.for_items(path, |st| {
+            let mut pos: usize = 0;
+                for field in &st.fields {
+                    if let Some(found_pos) = fields.iter().position(|v| *v == field.0) {
+                        pos = found_pos + 1;
+                    } else {
+                        fields.insert(pos, field.0.clone());
+                        pos += 1;
+                    }
+                }
+        });
+
+        let fields = Rc::new(fields);
+        memos.insert(path.clone(), fields.clone());
+        fields
     }
 
     pub fn write_to_file<P: AsRef<path::Path>>(&self, path: P) -> bool {
