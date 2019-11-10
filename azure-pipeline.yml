@@ -8,7 +8,7 @@ trigger:
 
 pool:
   vmImage: 'win1803'
-  container: lpetrut/rust_win_buildtools:latest 
+container: lpetrut/rust_win_buildtools:latest 
 steps:
 - script: echo %PATH%
 - script: dir %USERPROFILE%
