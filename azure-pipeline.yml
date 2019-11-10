@@ -8,8 +8,7 @@ trigger:
 
 pool:
   vmImage: 'win1803'
-  
-  container: rustops/crates-build-env-windows:latest 
+  container: lpetrut/rust_win_buildtools:latest 
 steps:
 - script: echo %PATH%
 - script: dir %USERPROFILE%
