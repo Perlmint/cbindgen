@@ -11,9 +11,8 @@ pool:
   
   container: rustops/crates-build-env-windows:latest 
 steps:
-- script: | echo %PATH%
+- script: echo %PATH%
     dir %USERPROFILE%
     cargo test
-
   displayName: 'Run a one-line script'
 
